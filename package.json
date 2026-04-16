@@ -1,0 +1,221 @@
+{
+  "name": "cognitive-skills-engine",
+  "displayName": "Cognitive Skills Engine",
+  "description": "20 expert cognitive skills for LLM agents. Token compression 2.7×. Chess board session memory. Works with Claude, Copilot, Continue, Cline, Cursor, Windsurf.",
+  "version": "1.0.0",
+  "publisher": "agnuxo1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "AI",
+    "Education",
+    "Other"
+  ],
+  "keywords": [
+    "AI",
+    "LLM",
+    "Claude",
+    "skills",
+    "token compression",
+    "cognitive",
+    "agent",
+    "math",
+    "science",
+    "philosophy",
+    "choose-your-own-adventure",
+    "Continue",
+    "Cline",
+    "Cursor",
+    "Windsurf"
+  ],
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1a1a2e",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Agnuxo1/cognitive-skills-engine"
+  },
+  "bugs": {
+    "url": "https://github.com/Agnuxo1/cognitive-skills-engine/issues"
+  },
+  "homepage": "https://github.com/Agnuxo1/cognitive-skills-engine#readme",
+  "license": "MIT",
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cognitiveSkillsEngine",
+          "title": "Cognitive Skills",
+          "icon": "media/board-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "cognitiveSkillsEngine": [
+        {
+          "id": "cse.boardView",
+          "name": "Cognition Board",
+          "type": "webview"
+        },
+        {
+          "id": "cse.skillTree",
+          "name": "Skill Tree",
+          "type": "tree"
+        },
+        {
+          "id": "cse.pathLog",
+          "name": "Session Path",
+          "type": "tree"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "cse.openBoard",
+        "title": "CSE: Open Cognition Board",
+        "category": "Cognitive Skills"
+      },
+      {
+        "command": "cse.injectSkill",
+        "title": "CSE: Inject Skill into Context",
+        "category": "Cognitive Skills"
+      },
+      {
+        "command": "cse.routeTask",
+        "title": "CSE: Auto-Route Task to Skills",
+        "category": "Cognitive Skills"
+      },
+      {
+        "command": "cse.injectMasterSkill",
+        "title": "CSE: Inject Master Skill (Full System)",
+        "category": "Cognitive Skills"
+      },
+      {
+        "command": "cse.injectTokenCompression",
+        "title": "CSE: Inject Token Compression [A1]",
+        "category": "Cognitive Skills"
+      },
+      {
+        "command": "cse.showPath",
+        "title": "CSE: Show Current Session Path",
+        "category": "Cognitive Skills"
+      },
+      {
+        "command": "cse.resetPath",
+        "title": "CSE: Reset Session Path",
+        "category": "Cognitive Skills"
+      },
+      {
+        "command": "cse.copyPath",
+        "title": "CSE: Copy Session Path to Clipboard",
+        "category": "Cognitive Skills"
+      },
+      {
+        "command": "cse.injectByCode",
+        "title": "CSE: Inject Skill by Board Code (e.g. A2, B3)",
+        "category": "Cognitive Skills"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "cse.openBoard",
+        "key": "ctrl+shift+b",
+        "mac": "cmd+shift+b",
+        "when": "editorFocus"
+      },
+      {
+        "command": "cse.injectMasterSkill",
+        "key": "ctrl+shift+m",
+        "mac": "cmd+shift+m"
+      },
+      {
+        "command": "cse.routeTask",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "editorHasSelection"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "cse.routeTask",
+          "when": "editorHasSelection",
+          "group": "cognitiveSkills@1"
+        },
+        {
+          "command": "cse.injectSkill",
+          "group": "cognitiveSkills@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "cse.routeTask",
+          "when": "editorHasSelection"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Cognitive Skills Engine",
+      "properties": {
+        "cse.skillsPath": {
+          "type": "string",
+          "default": "",
+          "description": "Custom path to skills directory (leave empty to use bundled skills)"
+        },
+        "cse.alwaysInjectTC": {
+          "type": "boolean",
+          "default": true,
+          "description": "Always inject Token Compression (A1) with every skill"
+        },
+        "cse.insertMode": {
+          "type": "string",
+          "enum": ["clipboard", "cursor", "newFile"],
+          "default": "clipboard",
+          "description": "How to deliver injected skill content"
+        },
+        "cse.pathLogEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable session path logging"
+        },
+        "cse.showBoardOnStartup": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show Cognition Board panel on VS Code startup"
+        },
+        "cse.compressionLevel": {
+          "type": "string",
+          "enum": ["lite", "full", "ultra"],
+          "default": "full",
+          "description": "Token compression intensity level"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./dist/test/runTest.js",
+    "package": "vsce package",
+    "publish": "vsce publish",
+    "publish:ovsx": "ovsx publish"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.3.0",
+    "@vscode/test-electron": "^2.3.0",
+    "@vscode/vsce": "^2.22.0",
+    "ovsx": "^0.8.0"
+  },
+  "dependencies": {}
+}
