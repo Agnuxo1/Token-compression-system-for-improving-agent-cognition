@@ -52,7 +52,7 @@ Meaning: Master → Compress → Math → Economics → Output
 ╔═══╦══════════════╦══════════════╦══════════════╦══════════════╦══════════════╦══════════════╗
 ║   ║      1       ║      2       ║      3       ║      4       ║      5       ║      6       ║
 ╠═══╬══════════════╬══════════════╬══════════════╬══════════════╬══════════════╬══════════════╣
-║ A ║ 🔵 TC        ║ 🔵 MM        ║ 🔵 PH       ║ 🔵 CH        ║ 🔵 BIO       ║ 🔵 CS      ║
+║ A ║ 🔵 TC       ║ 🔵 MM        ║ 🔵 PH       ║ 🔵 CH        ║ 🔵 BIO       ║ 🔵 CS       ║
 ║   ║ Token Comp.  ║ Mathematician║ Physicist    ║ Chemist      ║ Biologist    ║ CompSci      ║
 ║   ║ ALWAYS ON    ║ Erdős · Tao  ║ Feynman·Dirac║ Pauling·Corey║ Darwin·Crick ║ Turing·Knuth ║
 ╠═══╬══════════════╬══════════════╬══════════════╬══════════════╬══════════════╬══════════════╣
@@ -64,7 +64,7 @@ Meaning: Master → Compress → Math → Economics → Output
 ║   ║ Pol.Scientist║ Jurist       ║ Medical      ║ Astronomer   ║ Engineer     ║ Arts         ║
 ║   ║ Rawls·Morgen.║ Hart·Dworkin ║ Osler·Virchow║ Hubble·Hawkng║ Euler·Tesla  ║ Kant·Dewey   ║
 ╠═══╬══════════════╬══════════════╬══════════════╬══════════════╬══════════════╬══════════════╣
-║ D ║ 🟣 ENV      ║ 🟣 CUL       ║ ⬡ SCI⊕      ║ ⬡ HUM⊕      ║ ★ [MST]      ║ □ OUT        ║
+║ D ║ 🟣 ENV      ║ 🟣 CUL       ║ ⬡ SCI⊕      ║ ⬡ HUM⊕      ║ ★ [MST]      ║ □ OUT       ║
 ║   ║ Environment  ║ Culture      ║ Sci.Synthesis║ Hum.Synthesis║ MASTER SKILL ║ Output       ║
 ║   ║ Carson·Wilson║ Lévi-S·Geertz║ chain A+C    ║ chain B+C    ║ ← START HERE ║ END HERE →   ║
 ╚═══╩══════════════╩══════════════╩══════════════╩══════════════╩══════════════╩══════════════╝
