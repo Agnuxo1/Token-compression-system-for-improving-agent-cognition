@@ -1,4 +1,4 @@
-name: Publish VS Code Extension
+name: Publish to All Platforms
 
 on:
   push:
@@ -7,19 +7,24 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (e.g. 1.0.0)'
+        description: 'Version (e.g. 1.0.0)'
         required: true
+      targets:
+        description: 'Targets: all | vsce | ovsx | npm | browser | hf'
+        required: false
+        default: 'all'
 
 jobs:
-  build-and-publish:
+  # ─────────────────────────────────────────────
+  # 1. VS Code Marketplace + Open VSX
+  # ─────────────────────────────────────────────
+  publish-vscode:
+    name: VS Code Marketplace + Open VSX
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -30,8 +35,8 @@ jobs:
       - name: Compile TypeScript
         run: npm run compile
 
-      - name: Package extension (.vsix)
-        run: npx vsce package
+      - name: Package .vsix
+        run: npx vsce package --no-dependencies
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
@@ -43,34 +48,212 @@ jobs:
 
       - name: Publish to VS Code Marketplace
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        run: npx vsce publish
+        run: npx vsce publish --no-dependencies
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
-      - name: Publish to Open VSX (Windsurf/Cursor compatible)
+      - name: Publish to Open VSX (Windsurf / Cursor / VSCodium / OpenCode)
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         run: npx ovsx publish *.vsix -p ${{ secrets.OVSX_PAT }}
 
-      - name: Create GitHub Release
+  # ─────────────────────────────────────────────
+  # 2. npm Registry (CLI: npx cognitive-skills-engine)
+  # ─────────────────────────────────────────────
+  publish-npm:
+    name: npm Registry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Make CLI executable
+        run: chmod +x cli/index.js
+
+      - name: Publish to npm
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ─────────────────────────────────────────────
+  # 3. Browser Extension (Chrome Web Store + Firefox AMO)
+  # ─────────────────────────────────────────────
+  publish-browser:
+    name: Browser Extensions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Python (icon generation)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Pillow
+        run: pip install Pillow
+
+      - name: Generate browser extension icons
+        run: |
+          python - << 'EOF'
+          from PIL import Image, ImageDraw
+          import os
+          def make_icon(size):
+              img = Image.new("RGBA", (size, size), (0,0,0,0))
+              draw = ImageDraw.Draw(img)
+              r = max(3, size // 9)
+              draw.rounded_rectangle([0,0,size-1,size-1], radius=r, fill=(26,26,46,255))
+              row_colors = [(79,195,247),(255,183,77),(129,199,132),(206,147,216)]
+              mx, my = size*0.12, size*0.12
+              sx = (size-2*mx)/5; sy = (size-2*my-size*0.18)/3
+              dot = max(1, int(size*0.055))
+              for ri in range(4):
+                  for ci in range(6):
+                      cx=int(mx+ci*sx); cy=int(my+ri*sy)
+                      if ri==3 and ci==4:
+                          gd=int(dot*1.8)
+                          draw.ellipse([cx-gd,cy-gd,cx+gd,cy+gd],fill=(255,255,255,200))
+                      else:
+                          c=row_colors[ri]
+                          draw.ellipse([cx-dot,cy-dot,cx+dot,cy+dot],fill=(*c,220))
+              return img
+          os.makedirs("browser-extension/icons", exist_ok=True)
+          for sz in [16,32,48,128]:
+              make_icon(sz).save(f"browser-extension/icons/icon{sz}.png")
+          EOF
+
+      - name: Package Chrome extension (zip)
+        run: |
+          cd browser-extension
+          zip -r ../cognitive-skills-engine-chrome.zip . -x "*.DS_Store"
+          cd ..
+          echo "Chrome extension zip created"
+
+      - name: Upload Chrome extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-extension
+          path: cognitive-skills-engine-chrome.zip
+
+      - name: Publish to Chrome Web Store
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.CHROME_CLIENT_ID != ''
+        uses: mnao305/chrome-extension-upload@v4.0.1
+        with:
+          file-path: cognitive-skills-engine-chrome.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+      - name: Publish to Firefox AMO
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.FIREFOX_API_KEY != ''
+        run: |
+          npm install -g web-ext
+          web-ext sign \
+            --source-dir browser-extension \
+            --api-key ${{ secrets.FIREFOX_API_KEY }} \
+            --api-secret ${{ secrets.FIREFOX_API_SECRET }} \
+            --channel listed
+
+  # ─────────────────────────────────────────────
+  # 4. Hugging Face Space
+  # ─────────────────────────────────────────────
+  publish-hf:
+    name: Hugging Face Space
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Push to HF Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          # Clone HF Space repo
+          git clone https://Agnuxo1:${HF_TOKEN}@huggingface.co/spaces/Agnuxo1/cognitive-skills-engine hf_space || true
+          mkdir -p hf_space
+          # Copy Space files
+          cp hf-space/app.py hf_space/
+          cp hf-space/requirements.txt hf_space/
+          cp hf-space/README.md hf_space/
+          # Copy skills for the demo
+          cp -r skills hf_space/
+          cp MASTER-SKILL.md hf_space/
+          cd hf_space
+          git add -A
+          git commit -m "Update CSE Space to ${{ github.ref_name }}" || true
+          git push
+
+  # ─────────────────────────────────────────────
+  # 5. GitHub Release (all artifacts)
+  # ─────────────────────────────────────────────
+  github-release:
+    name: GitHub Release
+    runs-on: ubuntu-latest
+    needs: [publish-vscode, publish-browser]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: '*.vsix'
+          files: |
+            artifacts/**/*.vsix
+            artifacts/**/*.zip
           body: |
             ## Cognitive Skills Engine ${{ github.ref_name }}
 
-            Install in VS Code:
+            ### Install
+
+            **VS Code / Cursor / Windsurf / OpenCode:**
             ```bash
-            code --install-extension cognitive-skills-engine-${{ github.ref_name }}.vsix
+            ext install agnuxo1.cognitive-skills-engine
+            # or download .vsix below and: code --install-extension *.vsix
             ```
 
-            Or search "Cognitive Skills Engine" in the VS Code extension panel.
+            **CLI (Node.js):**
+            ```bash
+            npx cognitive-skills-engine board
+            npm install -g cognitive-skills-engine
+            ```
 
-            **Works with:** VS Code, Windsurf, Cursor, VSCodium
+            **Ollama:**
+            ```bash
+            git clone https://github.com/Agnuxo1/Token-compression-system-for-improving-agent-cognition
+            cd Token-compression-system-for-improving-agent-cognition
+            ollama create cognitive-skills -f Modelfile
+            ollama run cognitive-skills
+            ```
+
+            **Browser (Chrome/Firefox/Edge/Brave):**
+            Download `cognitive-skills-engine-chrome.zip` below, unzip, load as unpacked extension.
+
+            **Hugging Face Space:**
+            https://huggingface.co/spaces/Agnuxo1/cognitive-skills-engine
+
+            **Works with:** VS Code · Windsurf · Cursor · OpenCode · VSCodium · ChatGPT · Claude · Gemini · Ollama · LM Studio · Continue · Aider · Pinokio
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # ─────────────────────────────────────────────
+  # 6. Smoke tests
+  # ─────────────────────────────────────────────
   test:
+    name: Smoke Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -81,6 +264,10 @@ jobs:
       - name: Test CLI
         run: |
           node cli/index.js list
-          node cli/index.js board | head -30
-          node cli/index.js inject A2 | head -20
-          node cli/index.js route "prove a theorem" | head -10
+          node cli/index.js board | head -10
+          node cli/index.js inject A1 | head -5
+          node cli/index.js route "prove a theorem" | head -5
+      - name: Validate browser extension manifest
+        run: node -e "JSON.parse(require('fs').readFileSync('browser-extension/manifest.json'))" && echo "manifest.json OK"
+      - name: Validate package.json
+        run: node -e "JSON.parse(require('fs').readFileSync('package.json'))" && echo "package.json OK"

@@ -1,0 +1,17 @@
+{
+  "run": [
+    {
+      "method": "shell.run",
+      "params": {
+        "path": "app",
+        "message": "node cli/index.js board",
+        "on": [
+          {
+            "event": "/./",
+            "done": true
+          }
+        ]
+      }
+    }
+  ]
+}

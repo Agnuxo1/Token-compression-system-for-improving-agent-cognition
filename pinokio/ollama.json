@@ -1,0 +1,20 @@
+{
+  "run": [
+    {
+      "method": "shell.run",
+      "params": {
+        "path": "app",
+        "message": "ollama create cognitive-skills -f Modelfile",
+        "on": [
+          { "event": "success", "done": true }
+        ]
+      }
+    },
+    {
+      "method": "notify",
+      "params": {
+        "html": "Ollama model created! Run: <code>ollama run cognitive-skills</code>"
+      }
+    }
+  ]
+}
