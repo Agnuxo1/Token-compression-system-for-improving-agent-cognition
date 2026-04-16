@@ -1,0 +1,76 @@
+{
+  "manifest_version": 3,
+  "name": "Cognitive Skills Engine",
+  "short_name": "CSE",
+  "version": "1.0.0",
+  "description": "20 expert cognitive skills for AI chats. Token compression 2.7×. Works with ChatGPT, Claude, Gemini, Copilot, Perplexity, and any AI web interface.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Cognitive Skills Engine"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://claude.ai/*",
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://gemini.google.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://www.perplexity.ai/*",
+        "https://poe.com/*",
+        "https://huggingface.co/chat/*",
+        "https://chat.mistral.ai/*",
+        "https://you.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "https://chat.openai.com/*",
+    "https://chatgpt.com/*",
+    "https://gemini.google.com/*",
+    "https://copilot.microsoft.com/*",
+    "https://www.perplexity.ai/*",
+    "https://poe.com/*"
+  ],
+  "commands": {
+    "inject-master": {
+      "suggested_key": { "default": "Ctrl+Shift+M", "mac": "Command+Shift+M" },
+      "description": "Inject Master Skill into current AI chat"
+    },
+    "inject-tc": {
+      "suggested_key": { "default": "Ctrl+Shift+T", "mac": "Command+Shift+T" },
+      "description": "Inject Token Compression into current AI chat"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["skills/*.md", "icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

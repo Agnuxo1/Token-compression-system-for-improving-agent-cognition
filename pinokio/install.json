@@ -1,0 +1,23 @@
+{
+  "run": [
+    {
+      "method": "shell.run",
+      "params": {
+        "message": "git clone https://github.com/Agnuxo1/Token-compression-system-for-improving-agent-cognition app"
+      }
+    },
+    {
+      "method": "shell.run",
+      "params": {
+        "path": "app",
+        "message": "npm install"
+      }
+    },
+    {
+      "method": "notify",
+      "params": {
+        "html": "Cognitive Skills Engine installed! Click <b>Start CLI</b> to begin."
+      }
+    }
+  ]
+}

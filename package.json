@@ -4,8 +4,13 @@
   "description": "20 expert cognitive skills for LLM agents. Token compression 2.7×. Chess board session memory. Works with Claude, Copilot, Continue, Cline, Cursor, Windsurf.",
   "version": "1.0.0",
   "publisher": "agnuxo1",
+  "bin": {
+    "cognitive-skills-engine": "./cli/index.js",
+    "cse": "./cli/index.js"
+  },
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.85.0",
+    "node": ">=18.0.0"
   },
   "categories": [
     "AI",
@@ -36,12 +41,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Agnuxo1/cognitive-skills-engine"
+    "url": "https://github.com/Agnuxo1/Token-compression-system-for-improving-agent-cognition"
   },
   "bugs": {
-    "url": "https://github.com/Agnuxo1/cognitive-skills-engine/issues"
+    "url": "https://github.com/Agnuxo1/Token-compression-system-for-improving-agent-cognition/issues"
   },
-  "homepage": "https://github.com/Agnuxo1/cognitive-skills-engine#readme",
+  "homepage": "https://github.com/Agnuxo1/Token-compression-system-for-improving-agent-cognition#readme",
   "license": "MIT",
   "main": "./dist/extension.js",
   "activationEvents": [
@@ -206,9 +211,21 @@
     "pretest": "npm run compile",
     "test": "node ./dist/test/runTest.js",
     "package": "vsce package",
-    "publish": "vsce publish",
-    "publish:ovsx": "ovsx publish"
+    "publish:vsce": "vsce publish",
+    "publish:ovsx": "ovsx publish",
+    "publish:npm": "npm publish --access public",
+    "prepublishOnly": "node cli/index.js list > /dev/null"
   },
+  "files": [
+    "cli/",
+    "skills/",
+    "MASTER-SKILL.md",
+    "BOARD.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "README.md"
+  ],
   "devDependencies": {
     "@types/vscode": "^1.85.0",
     "@types/node": "^18.0.0",

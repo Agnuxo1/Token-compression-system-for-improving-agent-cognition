@@ -1,0 +1,11 @@
+{
+  "title": "Cognitive Skills Engine",
+  "description": "20 expert cognitive skills for LLM agents. Token compression 2.7×. Chess-board session memory. Works as system prompt for any local LLM.",
+  "icon": "https://raw.githubusercontent.com/Agnuxo1/Token-compression-system-for-improving-agent-cognition/main/media/icon.png",
+  "github": "https://github.com/Agnuxo1/Token-compression-system-for-improving-agent-cognition",
+  "menu": [
+    { "text": "Install", "href": "install.json" },
+    { "text": "Start CLI", "href": "start.json" },
+    { "text": "Create Ollama Model", "href": "ollama.json" }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Cognitive Skills Engine",
+  "version": "1.0.0",
+  "schema": "v1",
+  "systemMessage": "You are operating with the Cognitive Skills Engine (CSE) v1.0.\n\n## TOKEN COMPRESSION LAW (ALWAYS ACTIVE)\n∀ concept c: ∃ formal(c) → output formal(c)\n- 'for all'→∀ | 'there exists'→∃ | 'therefore'→∴ | 'implies'→⟹\n- 'water'→H₂O | 'O(n²)' direct | 'verified'→✓\nTarget: 2.3× avg compression. NEVER compress thinking. ALWAYS compress output.\n\n## COGNITION BOARD (6×4)\n```\nA:  TC(∞)    MM(math)  PH(phys)  CH(chem)  BIO(bio)  CS(code)\nB:  HIS(hist) PHI(phil) PSY(psy)  LIN(ling) GEO(geo)  ECO(econ)\nC:  POL(poli) LAW(law)  MED(med)  AST(ast)  ENG(eng)  ART(art)\nD:  ENV(env)  CUL(cult) SCI⊕     HUM⊕      MST★      OUT→\n```\n\nRoute every task: D5(start) → A1(TC) → domain cell(s) → D6(end)\nEnd responses with: PATH: D5·A1·[cells]·D6",
+  "contextProviders": [
+    {
+      "name": "file",
+      "params": {}
+    }
+  ],
+  "slashCommands": [
+    {
+      "name": "cse-route",
+      "description": "Route task to CSE skill cells",
+      "prompt": "Analyze the selected code/text and route it through the Cognitive Skills Engine. Identify which skill cells are needed, load them, and respond with compressed output. End with PATH: D5·A1·[cells]·D6"
+    },
+    {
+      "name": "cse-math",
+      "description": "Apply Mathematician skill (A2)",
+      "prompt": "Apply the CSE Mathematician Mind (A2). Use: existence|construction|bound|count|decide|optimise. Compress output with ∀∃∴⟹≡≈∈⊂∪∩∅ℕℤℚℝℂ∂∫∑∏∇. Tools: PARI/GP, SageMath, Lean4. PATH: D5·A1·A2·D6"
+    },
+    {
+      "name": "cse-compress",
+      "description": "Apply Token Compression (A1) to selection",
+      "prompt": "Rewrite the selected text with maximum token compression. Apply: ∀∃∴∵⟹⟺≡≈≠≤≥∈⊂∪∩∅ℕℤℚℝℂ∂∫∑∏∇ for math; H₂O CO₂ SMILES for chemistry; O(n²) for complexity. Never compress code. Output the compressed version only. PATH: D5·A1·D6"
+    }
+  ]
+}
