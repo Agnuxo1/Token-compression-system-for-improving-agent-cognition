@@ -17,7 +17,7 @@ tags:
   - math
   - science
   - humanities
-short_description: 20 expert cognitive skills for LLM agents. Token compression 2.7×.
+short_description: 20 expert skills for LLM agents. TC 2.7×.
 ---
 
 # Cognitive Skills Engine
