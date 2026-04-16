@@ -216,16 +216,6 @@
     "publish:npm": "npm publish --access public",
     "prepublishOnly": "node cli/index.js list > /dev/null"
   },
-  "files": [
-    "cli/",
-    "skills/",
-    "MASTER-SKILL.md",
-    "BOARD.md",
-    "AGENTS.md",
-    "CLAUDE.md",
-    "GEMINI.md",
-    "README.md"
-  ],
   "devDependencies": {
     "@types/vscode": "^1.85.0",
     "@types/node": "^18.0.0",
