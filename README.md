@@ -29,6 +29,10 @@
 
 ---
 
+<!-- impact-note:start -->
+<sub><strong>Efficiency and practical value.</strong> Task-selected Markdown skills and compact formal notation aim to reduce repeated prompt construction and unnecessary output tokens. The board and path log also provide a reusable way to organize domain context across sessions. Net savings depend on the skill-loading overhead, tokenizer and task, so the useful contribution is an inspectable routing and compression method described in <a href="#design-principles">the design principles</a>.</sub>
+<!-- impact-note:end -->
+
 ## What Is This?
 
 A system of **20 specialized `.md` skill files** that any LLM agent can load to think with **domain-expert depth** across all of science, humanities, arts, and culture — while compressing output tokens by **2.7×** through formal notation.
